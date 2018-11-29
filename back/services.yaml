@@ -1,0 +1,45 @@
+---
+- name: Start, configure and enable services
+  hosts: web
+  remote_user: root
+  vars:
+    server_nginx_config_directory: /etc/nginx
+    server_php_fpm_config_directory : /etc/php-fpm.d
+    local_nginx_config_directory: /home/goran/Desktop/playbooks/templates/nginx
+    local_php_fpm_config_directory : /home/goran/Desktop/playbooks/templates/php-fpm.d
+
+#treba generalizovati config templejtima kasnije
+
+  tasks:
+  - name: Create the nginx user
+    user:
+      name: nginx
+      state: present
+
+  - name: Remove the default nginx configuration
+    file:
+      path: "{{ server_nginx_config_directory }}/"
+      state: absent
+  - name: Copy the desired nginx configuration
+    copy:
+      src: "{{ local_nginx_config_directory }}/"
+      dest: "{{ server_nginx_config_directory }}/"
+  - name: Remove the default php-fpm configuration
+    file:
+      path: "{{ server_php_fpm_config_directory }}/"
+      state: absent
+  - name: Copy the desired php-fpm configuration
+    copy:
+      src: "{{ local_php_fpm_config_directory }}/"
+      dest: "{{ server_php_fpm_config_directory }}/"
+  - name: Restart and enable the php-fpm service
+    service:
+      name: php-fpm
+      enabled: yes
+      state: restarted
+  - name: Restart and enable the nginx service
+    service:
+      name: nginx
+      enabled: yes
+      state: restarted
+...

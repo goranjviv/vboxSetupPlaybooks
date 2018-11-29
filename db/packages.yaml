@@ -1,0 +1,48 @@
+---
+- name: Add repositories, Update and Install packages
+  hosts: web
+  remote_user: root
+
+  tasks:
+  - name: Add EPEL repo
+    yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+  - name: Add Remi PHPv7.2 repo
+    yum_repository:
+      name: remi-repo
+      description: Remi PHP v7.2 repository
+      mirrorlist: http://rpms.remirepo.net/enterprise/7/remi/mirror
+      enabled: yes
+
+  - name: update all packages
+    yum:
+      update_cache: yes
+      name: '*'
+      state: latest
+
+#zahtevaj odredjenu verziju paketa - kako???
+  - name: Install PHP, php-fpm and Laravel dependencies
+    yum:
+      update_cache: yes
+      name: 
+        - php
+        - php-fpm
+        - composer #da li brinem o composeru? ili bundlujem neophodne pakete na server BEZ composera
+        - php-openssl
+        - php-pdo
+        - php-mbstring
+        - php-tokenizer
+        - php-xml
+        - php-ctype
+        - php-json
+        - php-bcmath
+      state: latest
+
+  - name: Install nginx
+    yum:
+      update_cache: yes
+      name: nginx
+      state: latest
+...
